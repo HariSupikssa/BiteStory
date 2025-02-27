@@ -1,36 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 
-const Navbar = ({ onHomeClick }) => {
+const Navbar = () => {
+  const [isOpen, setOpen] = useState(false);
+
   return (
-    <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="#">Recipe App</a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <a className="nav-link active" href="#" onClick={onHomeClick}>Home</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Explore</a>
-              </li>
-              <li className="nav-item">
-                <form className="d-flex" role="search">
-                  <input className="form-control me-2" type="search" placeholder="Search recipes" aria-label="Search" />
-                  <button className="btn" type="submit"><img src="" alt="search-icon" /></button>
-                </form>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Login</a>
-              </li>
-            </ul>
+    <nav className='navbar is-primary' role='navigation' aria-label='main navigation'>
+      <div className='container'>
+        <div className="navbar-brand">
+          <a
+            role='button'
+            className={`navbar-burger burger ${isOpen ? 'is-active' : ''}`}
+            aria-label='menu'
+            aria-expanded='false'
+            onClick={() => setOpen(!isOpen)}
+          >
+            <span aria-hidden='true'></span>
+            <span aria-hidden='true'></span>
+            <span aria-hidden='true'></span>
+          </a>
+        </div>
+        <div className={`navbar-menu ${isOpen ? 'is-active' : ''}`}>
+          <div className="navbar-start">
+            <NavLink
+              className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`}
+              to='/'
+            >
+              Home
+            </NavLink>
+
+            <NavLink
+              className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`}
+              to='/about'
+            >
+              About
+            </NavLink>
+          </div>
+          <div className="navbar-end">
+            <div className="navbar-item">
+              <div className="buttons">
+                {/* {!isAuth? (
+                  <button className='button is-white' onClick={loginUser}>
+                    Login
+                  </button>
+                ):
+                (
+                  <button className='button is-white' onClick={logoutUser}>
+                    Log Out
+                  </button>
+                )
+
+                }
+                <a >Login</a> */}
+              </div>
+            </div>
           </div>
         </div>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 };
 

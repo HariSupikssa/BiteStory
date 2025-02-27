@@ -1,15 +1,11 @@
-import React from 'react';
-import Login from '../public/Login'; // Import Login popup component
+import React from 'react'
 
-const Home = ({ openPopup }) => {
+const Home = () => {
   return (
     <div>
-      <h1>Home page</h1>
-
-      {/* Conditionally render Login component based on openPopup state */}
-      {openPopup && <Login />}
+      <p>Tis home, mi casa, su casa</p>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

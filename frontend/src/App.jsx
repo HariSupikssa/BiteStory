@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import Home from './public/Home';
-import Login from './public/Login';
-import Register from './public/Register';
-
-const App = () => {
-  const [currentPage, setCurrentPage] = useState('login'); // track current page (login/register)
-
-  const handleSignUpClick = () => {
-    setCurrentPage('register'); // Show Register page
-  };
-
-  const handleLoginClick = () => {
-    setCurrentPage('login'); // Show Login page
-  };
-
+import React from 'react'
+import Navbar from './components/Navbar'
+import Home from './public/Home'
+import About from './public/About'
+// import Pages from './public/Pages'
+import { BrowserRouter, Route,Routes } from 'react-router-dom'
+function App() {
   return (
-    <div>
-      <Navbar />
-      <Home />
-      {currentPage === 'login' ? (
-        <Login onSignUpClick={handleSignUpClick} />
-      ) : (
-        <Register onLoginClick={handleLoginClick} />
-      )}
-    </div>
-  );
-};
+    <BrowserRouter>
+    <Navbar/>
+      <div>
+        <Routes>
+          <Route exact path='/' element={<Home/>}/>
+          <Route path='/about'element={<About/>}/>
+            
+          {/* <About/> */}
+        </Routes>
+      </div>
+    </BrowserRouter>
+    
+  )
+}
 
-export default App;
+export default App
