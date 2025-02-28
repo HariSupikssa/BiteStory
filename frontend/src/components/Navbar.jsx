@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import '../public/style.css';
 
 const Navbar = () => {
   const [isOpen, setOpen] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuth(!!token);
+  }, []);
+
+  const logoutUser = () => {
+    localStorage.removeItem('token');
+    setIsAuth(false);
+    navigate('/');
+  };
 
   return (
-    <nav className='navbar' role='navigation' aria-label='main navigation'>
+    <nav className='navbar ' role='navigation' aria-label='main navigation'>
       <div className='container'>
         <div className="navbar-brand">
           <a
@@ -39,22 +52,15 @@ const Navbar = () => {
           <div className="navbar-end">
             <div className="">
               <div className="buttons ">
-                <button className='button is-glassy'>
-                  Login
-                </button>
-                {/* {!isAuth? (
-                  <button className='button is-white' onClick={loginUser}>
+                {!isAuth ? (
+                  <NavLink className='button is-glassy' to='/login'>
                     Login
-                  </button>
-                ):
-                (
-                  <button className='button is-white' onClick={logoutUser}>
+                  </NavLink>
+                ) : (
+                  <button className='button is-glassy' onClick={logoutUser}>
                     Log Out
                   </button>
-                )
-
-                }
-                <a >Login</a> */}
+                )}
               </div>
             </div>
           </div>
