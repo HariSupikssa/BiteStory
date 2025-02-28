@@ -1,0 +1,47 @@
+.is-transparent {
+    background-color: hsl(0 100% 100% /1);
+}
+
+.is-glassy {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 10px 20px;
+    font-size: inherit;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease-in-out;
+    font-family: inherit;
+    font-weight: inherit;
+    mix-blend-mode: difference;
+    /* Adapts text color dynamically */
+    color: rgb(83, 97, 37);
+    /* Inherits color to match surrounding contrast */
+}
+
+.is-glassy:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+
+
+.navbar {
+    background-color: hsl(0 100% 100% /0.1);
+}
+
+.navbar-item.is-active {
+    background-color: hsl(75 26% 48%/1);
+    /* background-color: hsl(86 81% 31%/1); */
+    /* Change to your desired color  hsl(24 100% 50%/0.5);*/
+    color: white;
+    /* Ensure text color is readable */
+}
+
+.navbar-item:hover {
+    background-color: hsl(75 26% 48%/0.2);
+}
+
+.navbar-item.is-active:hover {
+    background-color: hsl(75 26% 48%/1);
+}

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import '../public/style.css';
 
 const Navbar = () => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <nav className='navbar is-primary' role='navigation' aria-label='main navigation'>
+    <nav className='navbar' role='navigation' aria-label='main navigation'>
       <div className='container'>
         <div className="navbar-brand">
           <a
@@ -21,14 +22,13 @@ const Navbar = () => {
           </a>
         </div>
         <div className={`navbar-menu ${isOpen ? 'is-active' : ''}`}>
-          <div className="navbar-start">
+          <div className="navbar-end">
             <NavLink
               className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`}
               to='/'
             >
               Home
             </NavLink>
-
             <NavLink
               className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`}
               to='/about'
@@ -37,8 +37,11 @@ const Navbar = () => {
             </NavLink>
           </div>
           <div className="navbar-end">
-            <div className="navbar-item">
-              <div className="buttons">
+            <div className="">
+              <div className="buttons ">
+                <button className='button is-glassy'>
+                  Login
+                </button>
                 {/* {!isAuth? (
                   <button className='button is-white' onClick={loginUser}>
                     Login
