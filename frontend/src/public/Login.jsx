@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // ADDED: For redirection
 import './style.css'; // Import the CSS file
 
-const Login = () => {
+const Login = ({ setIsAuth }) => { // ADDED: Accept setIsAuth as a prop
     const [isRegistering, setIsRegistering] = useState(false);
     const userRef = useRef();
     const errRef = useRef();
@@ -11,6 +12,7 @@ const Login = () => {
     const [pwd, setPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate(); // ADDED: For redirection
 
     useEffect(() => {
         userRef.current.focus();
@@ -27,19 +29,31 @@ const Login = () => {
                 `http://localhost:5000/${isRegistering ? 'register' : 'login'}`,
                 isRegistering ? { name, email, password: pwd } : { email, password: pwd }
             );
+
             if (response.data) {
-                setSuccess(true);
-                localStorage.setItem('auth-token', response.data);
+                if (isRegistering) {
+                    // ADDED: Handle registration success
+                    setSuccess(true);
+                    setIsRegistering(false); // Switch back to login form
+                    setErrMsg(''); // Clear any error messages
+                } else {
+                    // ADDED: Handle login success
+                    localStorage.setItem('token', response.data.token); // Store token
+                    setIsAuth(true); // Update authentication state
+                    navigate('/'); // Redirect to Home page
+                }
             }
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 400) {
-                setErrMsg('Missing Username or Password');
+                setErrMsg(isRegistering ? 'Missing Fields' : 'Missing Email or Password');
             } else if (err.response?.status === 401) {
                 setErrMsg('Unauthorized');
+            } else if (err.response?.status === 409) {
+                setErrMsg('Email already registered');
             } else {
-                setErrMsg('Login Failed');
+                setErrMsg(isRegistering ? 'Registration Failed' : 'Login Failed');
             }
             errRef.current.focus();
         }

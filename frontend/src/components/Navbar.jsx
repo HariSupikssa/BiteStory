@@ -2,15 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import '../public/style.css';
 
-const Navbar = () => {
+const Navbar = ({ isAuth, setIsAuth }) => {
   const [isOpen, setOpen] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuth(!!token);
-  }, []);
 
   const logoutUser = () => {
     localStorage.removeItem('token');
@@ -19,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className='navbar ' role='navigation' aria-label='main navigation'>
+    <nav className='navbar' role='navigation' aria-label='main navigation'>
       <div className='container'>
         <div className="navbar-brand">
           <a
@@ -36,32 +30,29 @@ const Navbar = () => {
         </div>
         <div className={`navbar-menu ${isOpen ? 'is-active' : ''}`}>
           <div className="navbar-end">
-            <NavLink
-              className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`}
-              to='/'
-            >
+            <NavLink className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`} to='/'>
               Home
             </NavLink>
-            <NavLink
-              className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`}
-              to='/about'
-            >
+            <NavLink className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`} to='/about'>
               About
             </NavLink>
+            {isAuth && (
+              <NavLink className={({ isActive }) => `navbar-item ${isActive ? 'is-active' : ''}`} to='/explore'>
+                Explore
+              </NavLink>
+            )}
           </div>
           <div className="navbar-end">
-            <div className="">
-              <div className="buttons ">
-                {!isAuth ? (
-                  <NavLink className='button is-glassy' to='/login'>
-                    Login
-                  </NavLink>
-                ) : (
-                  <button className='button is-glassy' onClick={logoutUser}>
-                    Log Out
-                  </button>
-                )}
-              </div>
+            <div className="buttons">
+              {!isAuth ? (
+                <NavLink className='button is-glassy' to='/login'>
+                  Login
+                </NavLink>
+              ) : (
+                <button className='button is-glassy' onClick={logoutUser}>
+                  Log Out
+                </button>
+              )}
             </div>
           </div>
         </div>
