@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './public/Home';
 import About from './public/About';
 import Login from './public/Login';
-import Explore from './public/Explore';
+import Explore from './components/Explore';
 
 const PrivateRoute = ({ isAuth }) => {
   return isAuth ? <Outlet /> : <Navigate to="/login" />;

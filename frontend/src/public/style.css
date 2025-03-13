@@ -4,6 +4,14 @@
     /* Sage text color */
 }
 
+/* * {
+    color: #2C3930;
+} */
+
+.black {
+    color: #2C3930;
+}
+
 /* Custom checkbox styles */
 input[type="checkbox"] {
     appearance: none;
@@ -159,3 +167,6 @@ body {
 h1 {
     color: #000000;
 }
+
+/* --------------------------------------------------------------------------- */
+/* Explore.jsx */

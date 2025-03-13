@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { searchRecipes, getRandomRecipes } = require('./src/recipe-api'); // Import recipe-related functions
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -80,6 +81,27 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).json({ message: "Error logging in" });
+    }
+});
+
+// Recipe Search Endpoint
+app.get('/api/recipes/search', async (req, res) => {
+    const { searchTerm, page } = req.query;
+    try {
+        const results = await searchRecipes(searchTerm, parseInt(page));
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch recipes' });
+    }
+});
+
+// Random Recipes Endpoint
+app.get('/api/recipes/random', async (req, res) => {
+    try {
+        const recipes = await getRandomRecipes();
+        res.json(recipes);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch random recipes' });
     }
 });
 
