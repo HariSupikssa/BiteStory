@@ -30,6 +30,14 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// Favorites Schema
+const favoriteSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to the User
+    recipeId: { type: String, required: true }, // Recipe ID from Spoonacular API
+});
+
+const Favorite = mongoose.model('Favorite', favoriteSchema);
+
 // Register Route
 app.post('/register', async (req, res) => {
     try {
@@ -102,6 +110,71 @@ app.get('/api/recipes/random', async (req, res) => {
         res.json(recipes);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch random recipes' });
+    }
+});
+
+// Add a recipe to favorites
+app.post('/api/favorites', async (req, res) => {
+    const { userId, recipeId } = req.body;
+
+    if (!userId || !recipeId) {
+        return res.status(400).json({ message: "Missing userId or recipeId" });
+    }
+
+    try {
+        // Check if the recipe is already favorited by the user
+        const existingFavorite = await Favorite.findOne({ userId, recipeId });
+        if (existingFavorite) {
+            return res.status(400).json({ message: "Recipe already in favorites" });
+        }
+
+        // Add to favorites
+        const favorite = new Favorite({ userId, recipeId });
+        await favorite.save();
+
+        res.status(201).json({ message: "Recipe added to favorites", favorite });
+    } catch (error) {
+        console.error("Error adding to favorites:", error);
+        res.status(500).json({ message: "Failed to add to favorites" });
+    }
+});
+
+// Remove a recipe from favorites
+app.delete('/api/favorites', async (req, res) => {
+    const { userId, recipeId } = req.body;
+
+    if (!userId || !recipeId) {
+        return res.status(400).json({ message: "Missing userId or recipeId" });
+    }
+
+    try {
+        // Remove from favorites
+        await Favorite.deleteOne({ userId, recipeId });
+
+        res.status(200).json({ message: "Recipe removed from favorites" });
+    } catch (error) {
+        console.error("Error removing from favorites:", error);
+        res.status(500).json({ message: "Failed to remove from favorites" });
+    }
+});
+
+// Get all favorites for a user
+app.get('/api/favorites/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ message: "Missing userId" });
+    }
+
+    try {
+        // Fetch all favorites for the user
+        const favorites = await Favorite.find({ userId });
+        const recipeIds = favorites.map((favorite) => favorite.recipeId);
+
+        res.status(200).json({ favorites: recipeIds });
+    } catch (error) {
+        console.error("Error fetching favorites:", error);
+        res.status(500).json({ message: "Failed to fetch favorites" });
     }
 });
 

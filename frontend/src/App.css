@@ -1,5 +1,9 @@
 @import 'bulma/css/bulma.css';
 
+* {
+    color: #2C3930;
+}
+
 body {
     background-color: #ffffff;
     /* or any other color */
