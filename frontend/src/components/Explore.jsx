@@ -3,6 +3,7 @@ import axios from "axios";
 import heartOff from "../assets/heart-off.svg"; // Import heart-off.svg
 import heartOn from "../assets/heart-on.svg"; // Import heart-on.svg
 import "../public/style.css"; // Import the CSS file
+// console.log("User ID:", localStorage.getItem("userId"));
 
 const Explore = () => {
     const [recipes, setRecipes] = useState([]);

@@ -1,4 +1,15 @@
 /* @import 'bulma/css/bulma.css'; */
+*,
+h1,
+input {
+    color: #2C3930;
+}
+
+html,
+body {
+    background-color: transparent;
+    color: #2C3930;
+}
 
 .sage {
     /* color: #8A9A5B; */
@@ -26,9 +37,7 @@
     outline: none;
 }
 
-* {
-    color: #2C3930;
-}
+
 
 .black {
     color: #2C3930;
@@ -119,7 +128,7 @@ input[type="checkbox"]:checked::before {
 
 
 .navbar {
-    background-color: hsl(0 100% 100% /0.1);
+    background-color: inherit;
 }
 
 .navbar-item.is-active {

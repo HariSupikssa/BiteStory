@@ -1,8 +1,25 @@
 @import 'bulma/css/bulma.css';
 
-* {
-    color: #2C3930;
+
+body,
+h1,
+input {
+    color: #2C3930 !important;
 }
+
+.navbar,
+.navbar-item,
+.navbar-link {
+    color: inherit !important;
+}
+
+body {
+    background-color: transparent;
+    /* or any other color */
+    margin: 0;
+    padding: 0;
+}
+
 
 /* html,
 body,
