@@ -41,7 +41,7 @@ const Favorite = mongoose.model('Favorite', favoriteSchema);
 // Register Route
 app.post('/register', async (req, res) => {
     try {
-        console.log("Received registration request:", req.body);
+        console.log("Received registration request:", req.body); // Debugging line
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
@@ -51,12 +51,23 @@ app.post('/register', async (req, res) => {
         // Check if email already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
+            console.log("Email already registered:", email); // Debugging line
             return res.status(400).json({ message: "Email already registered" });
         }
 
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ name, email, password: hashedPassword });
+        console.log("Password hashed successfully"); // Debugging line
+
+        // Create and save the user with an empty favorites array
+        const user = new User({
+            name,
+            email,
+            password: hashedPassword,
+            favorites: [] // Initialize favorites as an empty array
+        });
         await user.save();
+        console.log("User saved to database:", user); // Debugging line
 
         res.status(201).json({ message: "User registered successfully", user });
     } catch (error) {
@@ -65,10 +76,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Login Route
 app.post('/login', async (req, res) => {
     try {
-        console.log("Received login request:", req.body);
+        console.log("Received login request:", req.body); // Debugging line
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -79,6 +89,9 @@ app.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: "User not found" });
         }
+
+        console.log("User found:", user); // Debugging line
+        console.log("Stored password hash:", user.password); // Debugging line
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {

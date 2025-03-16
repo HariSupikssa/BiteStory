@@ -24,38 +24,66 @@ const Login = ({ setIsAuth }) => { // ADDED: Accept setIsAuth as a prop
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post(
-                `http://localhost:5000/${isRegistering ? 'register' : 'login'}`,
-                isRegistering ? { name, email, password: pwd } : { email, password: pwd }
-            );
+        if (isRegistering) {
+            // Registration logic
+            try {
+                const response = await axios.post(
+                    `http://localhost:5000/register`,
+                    { name, email, password: pwd }, // Ensure this matches the server's expectation
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
 
-            if (response.data) {
-                if (isRegistering) {
-                    // ADDED: Handle registration success
+                if (response.data) {
+                    console.log("Registration successful:", response.data);
                     setSuccess(true);
                     setIsRegistering(false); // Switch back to login form
-                    setErrMsg(''); // Clear any error messages
-                } else {
-                    // ADDED: Handle login success
-                    localStorage.setItem('token', response.data.token); // Store token
-                    setIsAuth(true); // Update authentication state
-                    navigate('/'); // Redirect to Home page
                 }
+            } catch (err) {
+                console.error("Error response:", err.response?.data);
+                if (!err?.response) {
+                    setErrMsg('No Server Response');
+                } else if (err.response?.status === 400) {
+                    setErrMsg(err.response.data.message || 'Bad Request');
+                } else {
+                    setErrMsg('Registration Failed');
+                }
+                errRef.current.focus();
             }
-        } catch (err) {
-            if (!err?.response) {
-                setErrMsg('No Server Response');
-            } else if (err.response?.status === 400) {
-                setErrMsg(isRegistering ? 'Missing Fields' : 'Missing Email or Password');
-            } else if (err.response?.status === 401) {
-                setErrMsg('Unauthorized');
-            } else if (err.response?.status === 409) {
-                setErrMsg('Email already registered');
-            } else {
-                setErrMsg(isRegistering ? 'Registration Failed' : 'Login Failed');
+        } else {
+            // Login logic
+            try {
+                const response = await axios.post(
+                    `http://localhost:5000/login`,
+                    { email, password: pwd },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                if (response.data) {
+                    localStorage.setItem('token', response.data.token);
+                    setIsAuth(true);
+                    navigate('/');
+                }
+            } catch (err) {
+                console.error("Error response:", err.response?.data);
+                if (!err?.response) {
+                    setErrMsg('No Server Response');
+                } else if (err.response?.status === 400) {
+                    setErrMsg(err.response.data.message || 'Bad Request');
+                } else if (err.response?.status === 401) {
+                    setErrMsg('Unauthorized');
+                } else {
+                    setErrMsg('Login Failed');
+                }
+                errRef.current.focus();
             }
-            errRef.current.focus();
         }
     };
 
