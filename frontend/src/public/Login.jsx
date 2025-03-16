@@ -96,7 +96,7 @@ const Login = ({ setIsAuth }) => { // ADDED: Accept setIsAuth as a prop
                         <div className="column is-8-tablet is-6-desktop is-5-widescreen">
                             <div className="box" style={{ backgroundColor: "#FFFFFF", borderRadius: "12px", boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)", padding: "3rem" }}>
                                 <div className="has-text-centered">
-                                    <h1 className="title sage">BrandName</h1>
+                                    <h1 className="title sage">BiteStory</h1>
                                 </div>
                                 {!isRegistering ? (
                                     <form onSubmit={handleSubmit}>

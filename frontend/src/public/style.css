@@ -1,7 +1,10 @@
 /* @import 'bulma/css/bulma.css'; */
 *,
 h1,
-input {
+h2,
+h3,
+input,
+.title {
     color: #2C3930;
 }
 
@@ -9,6 +12,11 @@ html,
 body {
     background-color: transparent;
     color: #2C3930;
+
+}
+
+body {
+    padding: 1%;
 }
 
 .sage {

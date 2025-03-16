@@ -5,6 +5,7 @@ import Home from './public/Home';
 import About from './public/About';
 import Login from './public/Login';
 import Explore from './components/Explore';
+import Recipe from "./components/Recipe";
 
 const PrivateRoute = ({ isAuth }) => {
   return isAuth ? <Outlet /> : <Navigate to="/login" />;
@@ -29,8 +30,10 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute isAuth={isAuth} />}>
-          <Route path='/explore' element={<Explore />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/recipe/:id" element={<Recipe />} />
         </Route>
+
 
         {/* Fallback Route (Optional) */}
         <Route path="*" element={<Navigate to="/" />} /> {/* Redirects to Home if route doesn't exist */}

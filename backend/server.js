@@ -23,9 +23,10 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // User Schema
 const userSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    password: String,
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    favorites: { type: [String], default: [] } // Array of recipe IDs
 });
 
 const User = mongoose.model('User', userSchema);
@@ -48,24 +49,23 @@ app.post('/register', async (req, res) => {
             return res.status(400).json({ message: "Missing fields" });
         }
 
-        // Check if email already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             console.log("Email already registered:", email); // Debugging line
             return res.status(400).json({ message: "Email already registered" });
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log("Password hashed successfully"); // Debugging line
 
-        // Create and save the user with an empty favorites array
         const user = new User({
             name,
             email,
             password: hashedPassword,
-            favorites: [] // Initialize favorites as an empty array
+            favorites: [] // Explicitly set favorites to an empty array
         });
+        console.log("User object before saving:", user); // Debugging line
+
         await user.save();
         console.log("User saved to database:", user); // Debugging line
 
@@ -76,6 +76,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
+// Login Route
 app.post('/login', async (req, res) => {
     try {
         console.log("Received login request:", req.body); // Debugging line
@@ -98,7 +99,11 @@ app.post('/login', async (req, res) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        res.status(200).json({ message: "Login successful", user });
+        // Include the user's favorites in the response
+        const favorites = await Favorite.find({ userId: user._id });
+        const recipeIds = favorites.map((favorite) => favorite.recipeId);
+
+        res.status(200).json({ message: "Login successful", user, favorites: recipeIds });
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).json({ message: "Error logging in" });
@@ -135,15 +140,25 @@ app.post('/api/favorites', async (req, res) => {
     }
 
     try {
-        // Check if the recipe is already favorited by the user
+        console.log("Adding recipe to favorites:", { userId, recipeId }); // Debugging line
+
         const existingFavorite = await Favorite.findOne({ userId, recipeId });
         if (existingFavorite) {
+            console.log("Recipe already in favorites:", existingFavorite); // Debugging line
             return res.status(400).json({ message: "Recipe already in favorites" });
         }
 
-        // Add to favorites
         const favorite = new Favorite({ userId, recipeId });
         await favorite.save();
+        console.log("Favorite saved to database:", favorite); // Debugging line
+
+        // Update the user's favorites array
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { favorites: recipeId } }, // Add recipeId to favorites array
+            { new: true } // Return the updated document
+        );
+        console.log("User favorites updated:", updatedUser.favorites); // Debugging line
 
         res.status(201).json({ message: "Recipe added to favorites", favorite });
     } catch (error) {
@@ -161,8 +176,18 @@ app.delete('/api/favorites', async (req, res) => {
     }
 
     try {
-        // Remove from favorites
+        console.log("Removing recipe from favorites:", { userId, recipeId }); // Debugging line
+
         await Favorite.deleteOne({ userId, recipeId });
+        console.log("Favorite removed from database"); // Debugging line
+
+        // Update the user's favorites array
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { favorites: recipeId } }, // Remove recipeId from favorites array
+            { new: true } // Return the updated document
+        );
+        console.log("User favorites updated:", updatedUser.favorites); // Debugging line
 
         res.status(200).json({ message: "Recipe removed from favorites" });
     } catch (error) {

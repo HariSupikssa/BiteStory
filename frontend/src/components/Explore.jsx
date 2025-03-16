@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import heartOff from "../assets/heart-off.svg"; // Import heart-off.svg
-import heartOn from "../assets/heart-on.svg"; // Import heart-on.svg
-import "../public/style.css"; // Import the CSS file
-// console.log("User ID:", localStorage.getItem("userId"));
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import heartOff from "../assets/heart-off.svg";
+import heartOn from "../assets/heart-on.svg";
+import "../public/style.css";
 
 const Explore = () => {
     const [recipes, setRecipes] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [likedRecipes, setLikedRecipes] = useState(new Set()); // Track liked recipes
+    const [likedRecipes, setLikedRecipes] = useState(new Set());
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
     useEffect(() => {
         fetchPopularRecipes();
-        fetchLikedRecipes(); // Fetch liked recipes from the backend
+        fetchLikedRecipes();
     }, []);
 
     // Fetch popular recipes from Spoonacular API
@@ -39,7 +40,7 @@ const Explore = () => {
     // Fetch liked recipes from your backend
     const fetchLikedRecipes = async () => {
         try {
-            const userId = localStorage.getItem("userId"); // Assuming userId is stored in localStorage after login
+            const userId = localStorage.getItem("userId");
             if (!userId) return;
 
             const response = await axios.get(`/api/favorites/${userId}`);
@@ -69,15 +70,29 @@ const Explore = () => {
 
     // Toggle liked status
     const toggleLike = async (recipeId) => {
-        const newLikedRecipes = new Set(likedRecipes);
-        if (newLikedRecipes.has(recipeId)) {
-            newLikedRecipes.delete(recipeId);
-            await removeLikedRecipe(recipeId);
-        } else {
-            newLikedRecipes.add(recipeId);
-            await addLikedRecipe(recipeId);
+        try {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                console.error("User ID not found. Please log in.");
+                return;
+            }
+
+            if (likedRecipes.has(recipeId)) {
+                // Remove from favorites
+                await removeLikedRecipe(recipeId);
+                setLikedRecipes((prev) => {
+                    const newLikedRecipes = new Set(prev);
+                    newLikedRecipes.delete(recipeId);
+                    return newLikedRecipes;
+                });
+            } else {
+                // Add to favorites
+                await addLikedRecipe(recipeId);
+                setLikedRecipes((prev) => new Set(prev).add(recipeId));
+            }
+        } catch (error) {
+            console.error("Error toggling like:", error);
         }
-        setLikedRecipes(newLikedRecipes);
     };
 
     // Add a recipe to liked recipes in the backend
@@ -86,7 +101,8 @@ const Explore = () => {
             const userId = localStorage.getItem("userId");
             if (!userId) return;
 
-            await axios.post("/api/favorites", { userId, recipeId });
+            const response = await axios.post("/api/favorites", { userId, recipeId });
+            console.log("Added to favorites:", response.data);
         } catch (error) {
             console.error("Error adding liked recipe:", error);
         }
@@ -98,10 +114,17 @@ const Explore = () => {
             const userId = localStorage.getItem("userId");
             if (!userId) return;
 
-            await axios.delete("/api/favorites", { data: { userId, recipeId } });
+            const response = await axios.delete("/api/favorites", { data: { userId, recipeId } });
+            console.log("Removed from favorites:", response.data);
         } catch (error) {
             console.error("Error removing liked recipe:", error);
         }
+    };
+
+    // Navigate to Recipe component when a card is clicked
+    const handleCardClick = (recipeId) => {
+        console.log("Navigating to recipe:", recipeId); // Debugging
+        navigate(`/recipe/${recipeId}`);
     };
 
     return (
@@ -139,7 +162,12 @@ const Explore = () => {
             ) : (
                 <div className="scrolling-wrapper">
                     {recipes.map((recipe) => (
-                        <div key={recipe.id} className="card sage-card">
+                        <div
+                            key={recipe.id}
+                            className="card sage-card"
+                            onClick={() => handleCardClick(recipe.id)} // Add onClick handler
+                            style={{ cursor: "pointer" }} // Change cursor to pointer
+                        >
                             <div className="card-image" style={{ position: "relative" }}>
                                 <figure className="image is-3by2">
                                     <img src={recipe.image} alt={recipe.title} />
@@ -147,7 +175,10 @@ const Explore = () => {
                                 {/* Heart Button */}
                                 <button
                                     className="heart-button"
-                                    onClick={() => toggleLike(recipe.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click when heart is clicked
+                                        toggleLike(recipe.id);
+                                    }}
                                     style={{
                                         position: "absolute",
                                         top: "10px",
